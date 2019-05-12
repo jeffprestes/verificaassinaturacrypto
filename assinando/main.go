@@ -31,9 +31,7 @@ func main() {
 	log.Printf("Objeto Chave publica em ECDSA %+v\n", chavePublicaEmECDSA)
 
 	chavePublicaEmBytes := crypto.FromECDSAPub(chavePublicaEmECDSA)
-	dst := make([]byte, hex.EncodedLen(len(chavePublicaEmBytes)))
-	hex.Encode(dst, chavePublicaEmBytes)
-	chavePublicaEmHexaString := "0x" + string(dst)
+	chavePublicaEmHexaString := hexutil.Encode(chavePublicaEmBytes)
 	log.Println("Chave publica em Hexadecimal ", chavePublicaEmHexaString)
 
 	dado := "Eu vou assinar esse texto aqui"
