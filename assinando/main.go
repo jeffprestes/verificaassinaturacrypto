@@ -24,11 +24,14 @@ func main() {
 	}
 
 	log.Println("Temos as chaves...")
+	log.Println("")
 	log.Println("Chave privada ", chavePrivada)
+	log.Println("")
 	log.Println("Chave privada em Hexadecimal ", chavePrivadaEmHexadecimal)
-	log.Printf("Chave privada em ECDSA %+v\n", chavePrivadaEmECDSA)
-	log.Printf("Objeto Chave publica %+v\n", chavePublica)
-	log.Printf("Objeto Chave publica em ECDSA %+v\n", chavePublicaEmECDSA)
+	log.Println("")
+	log.Printf("Chave privada em ECDSA %+v\n\n", chavePrivadaEmECDSA)
+	log.Printf("Objeto Chave publica %+v\n\n", chavePublica)
+	log.Printf("Objeto Chave publica em ECDSA %+v\n\n\n", chavePublicaEmECDSA)
 
 	chavePublicaEmBytes := crypto.FromECDSAPub(chavePublicaEmECDSA)
 	chavePublicaEmHexaString := hexutil.Encode(chavePublicaEmBytes)
@@ -36,17 +39,14 @@ func main() {
 
 	dado := "Eu vou assinar esse texto aqui"
 	hash := crypto.Keccak256Hash([]byte(dado))
-	log.Printf("Hash do dado a ser assinado %+v\n", hash.String())
+	log.Printf("Hash do dado a ser assinado %+v\n\n", hash.String())
 
 	assinatura, err := crypto.Sign(hash.Bytes(), chavePrivadaEmECDSA)
 	if err != nil {
 		log.Fatal("Erro ao assinar o dado ", err)
 	}
 
-	assinaturaChavePublica, err := crypto.Ecrecover(hash.Bytes(), assinatura)
-	if err != nil {
-		log.Fatalf("Erro ao gerar chave publica da assinatura %+v\n", err)
-	}
-
-	log.Printf("O dado assinado em hexa: %s\n", hexutil.Encode(assinaturaChavePublica))
+	log.Printf("\nO dado assinado em hexa: %s\nA chave publica em Hexa: %s\n",
+		hexutil.Encode(assinatura),
+		chavePublicaEmHexaString)
 }
