@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"log"
+	"strings"
 
 	"github.com/decred/dcrd/dcrec/secp256k1"
 
@@ -13,9 +14,9 @@ import (
 func main() {
 
 	secretText := "Hal Finney was Satoshi Nakamoto."
-	pubKeyIKnow := "0433e59593e3ac1dbf8e7167250c49f5a75f38d37afacc71df97755f3d56cd436c68ee7190f03a9eacddf88911226f1464694e2b9397e1c023aea09efc18591e00"
+	pubKeyIKnowInHex := "0433e59593e3ac1dbf8e7167250c49f5a75f38d37afacc71df97755f3d56cd436c68ee7190f03a9eacddf88911226f1464694e2b9397e1c023aea09efc18591e00"
 
-	encryptedText, err := EncryptECWithPublicKey(pubKeyIKnow, secretText)
+	encryptedText, err := EncryptECWithPublicKey(pubKeyIKnowInHex, secretText)
 	if err != nil {
 		log.Fatal("Error encrypting text: ", err)
 	}
@@ -43,6 +44,7 @@ func main() {
 //EncryptECWithPublicKey using EC (with secp256k1 parameters) public key in hexadecimal string format encrypt a string
 func EncryptECWithPublicKey(pubKeyInHexaString, textToEncrypt string) (encryptedText string, err error) {
 	err = nil
+	pubKeyInHexaString = strings.TrimPrefix(pubKeyInHexaString, "0x")
 	dst := make([]byte, hex.DecodedLen(len(pubKeyInHexaString)))
 	chavePublicaEmInt, err := hex.Decode(dst, []byte(pubKeyInHexaString))
 	if err != nil {
