@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	chavePrivada := "EuTenho32BitsVocePodeAcreditar!!"
+	chavePrivada := "NoisTenho32BitsVocePodeAcreditar"
 	chavePrivadaEmHexadecimal := hex.EncodeToString([]byte(chavePrivada))
 	chavePrivadaEmECDSA, err := crypto.HexToECDSA(chavePrivadaEmHexadecimal)
 	if err != nil {
@@ -34,7 +34,8 @@ func main() {
 
 	chavePublicaEmBytes := crypto.FromECDSAPub(chavePublicaEmECDSA)
 	chavePublicaEmHexaString := hexutil.Encode(chavePublicaEmBytes)
-	log.Println("Chave publica em Hexadecimal ", chavePublicaEmHexaString)
+	log.Printf("Chave publica em Texto [%x] - Len: %d\n", string(chavePublicaEmBytes), len(string(chavePublicaEmBytes)))
+	log.Println("Chave publica em Hexadecimal ", chavePublicaEmHexaString, " Len: ", len(chavePublicaEmHexaString), " O que e : ", chavePublicaEmBytes[0])
 
 	dado := "Eu vou assinar esse texto aqui"
 	hash := crypto.Keccak256Hash([]byte(dado))

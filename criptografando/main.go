@@ -12,37 +12,75 @@ import (
 
 func main() {
 
-	in := []byte("Hey there dude. How are you doing? This is a test.")
+	secretText := "Hal Finney was Satoshi Nakamoto."
+	pubKeyIKnow := "0433e59593e3ac1dbf8e7167250c49f5a75f38d37afacc71df97755f3d56cd436c68ee7190f03a9eacddf88911226f1464694e2b9397e1c023aea09efc18591e00"
 
-	//chavePublica := secp256k1.NewPublicKey(chavePrivadaEmECDSA.X, chavePrivadaEmECDSA.Y)
-	chavePublica, err := secp256k1.ParsePubKey([]byte("0x04f7270a93ba0c2ec6686797da050bd602293a3d6cc53d6b86758d44cae22813e9e864682e9e9d351bbfb65cadedf62d2687c78bf2fd9146be23172026f001ecdd"))
+	encryptedText, err := EncryptECWithPublicKey(pubKeyIKnow, secretText)
 	if err != nil {
-		log.Fatal("Erro ao fazer o parse da chave publica ", err)
+		log.Fatal("Error encrypting text: ", err)
 	}
 
-	out, err := secp256k1.Encrypt(chavePublica, in)
+	log.Printf("Encrypted text in hexa: %x\n", encryptedText)
+
+	log.Println("===========================================")
+
+	myPrivateKey := "NoisTenho32BitsVocePodeAcreditar"
+
+	decryptedText, err := DecryptWithECPrivateKey(myPrivateKey, encryptedText)
 	if err != nil {
-		log.Fatal("failed to encrypt:", err)
+		log.Fatal("Error decrypting text: ", err)
 	}
 
-	chavePrivada := "EuTenho32BitsVocePodeAcreditar!!"
-	chavePrivadaEmHexadecimal := hex.EncodeToString([]byte(chavePrivada))
+	if !bytes.Equal([]byte(secretText), []byte(decryptedText)) {
+		log.Fatal("Ops... decrypted data doesn't match original ", encryptedText, "  ", decryptedText)
+	}
+
+	log.Println("Perfect!")
+	log.Println("In ", secretText, " - Out ", decryptedText)
+
+}
+
+//EncryptECWithPublicKey using EC (with secp256k1 parameters) public key in hexadecimal string format encrypt a string
+func EncryptECWithPublicKey(pubKeyInHexaString, textToEncrypt string) (encryptedText string, err error) {
+	err = nil
+	dst := make([]byte, hex.DecodedLen(len(pubKeyInHexaString)))
+	chavePublicaEmInt, err := hex.Decode(dst, []byte(pubKeyInHexaString))
+	if err != nil {
+		log.Fatal("[EncryptECDSAWithPublicKey] Error decoding pubKey to Int: ", err.Error())
+		return
+	}
+	dst = dst[:chavePublicaEmInt]
+
+	//log.Printf("[EncryptECDSAWithPublicKey]  PubKey: %s\n", dst)
+	chavePublicaECDSA, err := secp256k1.ParsePubKey(dst)
+	if err != nil {
+		log.Fatal("Error parsing PubKey:", err)
+		return
+	}
+
+	out, err := secp256k1.Encrypt(chavePublicaECDSA, []byte(textToEncrypt))
+	if err != nil {
+		log.Fatal("[EncryptECDSAWithPublicKey] failed to encrypt: ", err)
+		return
+	}
+	encryptedText = string(out)
+	return
+}
+
+//DecryptWithECPrivateKey decrypt a text using EC (with secp256k1 parameters) private key
+func DecryptWithECPrivateKey(privateKey, encryptedText string) (decryptedText string, err error) {
+	chavePrivadaEmHexadecimal := hex.EncodeToString([]byte(privateKey))
 	chavePrivadaEmECDSA, err := crypto.HexToECDSA(chavePrivadaEmHexadecimal)
 	chavePrivadaDecred := secp256k1.NewPrivateKey(chavePrivadaEmECDSA.D)
 	if err != nil {
-		log.Fatal("Erro ao gerar a chave privada em ECDSA ", err)
+		log.Fatal("[DecryptWithECPrivateKey] Error generating private key from text: ", err)
+		return
 	}
 
-	dec, err := secp256k1.Decrypt(chavePrivadaDecred, out)
+	dec, err := secp256k1.Decrypt(chavePrivadaDecred, []byte(encryptedText))
 	if err != nil {
-		log.Fatal("failed to decrypt:", err)
+		log.Fatal("[DecryptWithECPrivateKey] failed to decrypt:", err)
 	}
-
-	if !bytes.Equal(in, dec) {
-		log.Fatal("decrypted data doesn't match original")
-	}
-
-	log.Println("Sucesso !")
-	log.Println("Entrada ", string(in), " - Saida ", string(dec))
-
+	decryptedText = string(dec)
+	return
 }
