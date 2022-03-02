@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	chavePrivada := "NoisTenho32BitsVocePodeAcreditar"
+	chavePrivada := "0004Tenho32BitsVocePodeAcreditar"
 	chavePrivadaEmHexadecimal := hex.EncodeToString([]byte(chavePrivada))
 	chavePrivadaEmECDSA, err := crypto.HexToECDSA(chavePrivadaEmHexadecimal)
 	if err != nil {
@@ -51,7 +51,7 @@ func main() {
 	fmt.Printf("\n")
 	fmt.Println("Texto a ser assinado: ", dado)
 	fmt.Printf("Hash do dado a ser assinado %+v\n", hash.String())
-	
+
 	assinatura, err := crypto.Sign(hash.Bytes(), chavePrivadaEmECDSA)
 	if err != nil {
 		fmt.Print("Erro ao assinar o dado ", err)
