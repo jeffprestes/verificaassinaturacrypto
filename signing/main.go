@@ -23,6 +23,8 @@ func main() {
 		log.Fatal("Nao foi possivel fazer o casting da chave publica para ECDSA")
 	}
 
+	contaEthereum := crypto.PubkeyToAddress(*chavePublicaEmECDSA)
+
 	log.Println("Temos as chaves...")
 	log.Println("")
 	log.Println("Chave privada ", chavePrivada)
@@ -31,7 +33,8 @@ func main() {
 	log.Println("")
 	log.Printf("Chave privada em ECDSA %+v\n\n", chavePrivadaEmECDSA)
 	log.Printf("Objeto Chave publica %+v\n\n", chavePublica)
-	log.Printf("Objeto Chave publica em ECDSA %+v\n\n\n", chavePublicaEmECDSA)
+	log.Printf("Objeto Chave publica em ECDSA %+v\n\n", chavePublicaEmECDSA)
+	log.Printf("Conta Ethereum %s\n\n\n", contaEthereum.String())
 
 	chavePublicaEmBytes := crypto.FromECDSAPub(chavePublicaEmECDSA)
 	chavePublicaEmHexaString := hexutil.Encode(chavePublicaEmBytes)
