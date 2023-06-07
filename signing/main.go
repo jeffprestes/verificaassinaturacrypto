@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	chavePrivada := "EuTenho32BitsVocePodeAcreditar!!"
+	chavePrivada := "PalmeirasNaoTemMundial51NaoConta"
 	chavePrivadaEmHexadecimal := hex.EncodeToString([]byte(chavePrivada))
 	chavePrivadaEmECDSA, err := crypto.HexToECDSA(chavePrivadaEmHexadecimal)
 	if err != nil {
